@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面接突破クイズ</title>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8398161859137802"
+     crossorigin="anonymous"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:linear-gradient(135deg,#0f172a,#1e3a8a,#312e81);
+  color:#fff;
+}
+header{
+  text-align:center;
+  padding:32px 16px;
+}
+header h1{
+  margin:0;
+  font-size:32px;
+}
+header p{
+  opacity:.9;
+}
+.wrap{
+  max-width:900px;
+  margin:auto;
+  padding:16px;
+}
+.card{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:24px;
+  padding:24px;
+  box-shadow:0 20px 50px rgba(0,0,0,.25);
+  backdrop-filter:blur(12px);
+}
+.ad{
+  margin:18px auto;
+  padding:10px;
+  background:rgba(255,255,255,.08);
+  border-radius:16px;
+}
+.status{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:16px;
+  font-weight:700;
+}
+.bar{
+  width:100%;
+  height:12px;
+  background:rgba(255,255,255,.2);
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:20px;
+}
+.bar span{
+  display:block;
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#22c55e,#facc15);
+  transition:.3s;
+}
+.question{
+  font-size:22px;
+  font-weight:800;
+  line-height:1.6;
+  margin-bottom:20px;
+}
+.options{
+  display:grid;
+  gap:12px;
+}
+button{
+  border:none;
+  cursor:pointer;
+  border-radius:16px;
+  padding:15px 18px;
+  font-size:16px;
+  font-weight:700;
+}
+.option{
+  background:#fff;
+  color:#111827;
+  text-align:left;
+  transition:.2s;
+}
+.option:hover{
+  transform:translateY(-2px);
+  background:#dbeafe;
+}
+.option.correct{
+  background:#22c55e;
+  color:#fff;
+}
+.option.wrong{
+  background:#ef4444;
+  color:#fff;
+}
+.explain{
+  margin-top:18px;
+  padding:16px;
+  background:rgba(0,0,0,.25);
+  border-radius:16px;
+  line-height:1.7;
+  display:none;
+}
+.next{
+  display:none;
+  margin-top:18px;
+  width:100%;
+  background:#facc15;
+  color:#111827;
+}
+.start,.restart{
+  background:#22c55e;
+  color:#fff;
+  width:100%;
+  margin-top:16px;
+}
+.result{
+  text-align:center;
+  display:none;
+}
+.score{
+  font-size:48px;
+  font-weight:900;
+  color:#facc15;
+}
+.rank{
+  font-size:26px;
+  font-weight:900;
+  margin:12px 0;
+}
+.badge{
+  display:inline-block;
+  padding:8px 14px;
+  background:#facc15;
+  color:#111827;
+  border-radius:999px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+.small{
+  font-size:14px;
+  opacity:.85;
+}
+@media(max-width:600px){
+  header h1{font-size:26px}
+  .question{font-size:18px}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <h1>面接突破クイズ</h1>
+  <p>面接で評価される答え方・NG回答・逆質問をクイズでチェック！</p>
+</header>
+
+<div class="wrap">
+
+  <div class="ad">
+    <!-- UIゲーム -->
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-8398161859137802"
+         data-ad-slot="6325875393"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
+  <div class="card" id="startScreen">
+    <h2>ルール</h2>
+    <p>面接でよくある場面に対して、もっとも評価されやすい答えを選んでください。</p>
+    <p class="small">全30問ランダム出題。回答後、自動で次の問題へ進みます。</p>
+    <button class="start" onclick="startGame()">スタート</button>
+  </div>
+
+  <div class="card" id="quizScreen" style="display:none;">
+    <div class="status">
+      <div id="count">1 / 30</div>
+      <div id="score">正解 0</div>
+    </div>
+    <div class="bar"><span id="bar"></span></div>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <div class="explain" id="explain"></div>
+    <button class="next" id="nextBtn" onclick="nextQuestion()">次へ</button>
+  </div>
+
+  <div class="card result" id="resultScreen">
+    <div class="badge">結果発表</div>
+    <div class="score" id="finalScore"></div>
+    <div class="rank" id="rank"></div>
+    <p id="comment"></p>
+
+    <div class="ad">
+      <!-- UIゲーム -->
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-8398161859137802"
+           data-ad-slot="6325875393"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+
+    <button class="restart" onclick="location.reload()">もう一度挑戦する</button>
+  </div>
+
+</div>
+
+<script>
+const allQuestions = [
+  {
+    q:"面接で「自己紹介をお願いします」と言われた。最も良い答え方は？",
+    options:["趣味を中心に長く話す","経歴・強み・応募理由につながる内容を1分程度で話す","名前だけ言って終える","学生時代の思い出を全部話す"],
+    answer:1,
+    exp:"自己紹介は長すぎず、経歴・強み・応募職種とのつながりを簡潔に伝えるのが効果的です。"
+  },
+  {
+    q:"志望動機で一番避けたい答えは？",
+    options:["御社の事業内容に魅力を感じたため","自分の経験を活かせると考えたため","家から近いからです","成長環境に魅力を感じたため"],
+    answer:2,
+    exp:"本音として通勤面があっても、志望動機の中心にすると意欲が低く見えやすいです。"
+  },
+  {
+    q:"「短所を教えてください」への良い答え方は？",
+    options:["短所はありません","短所だけを暗く話す","短所と改善行動をセットで話す","人の悪口を言う"],
+    answer:2,
+    exp:"短所は改善努力とセットで伝えると、自己理解と成長意欲が伝わります。"
+  },
+  {
+    q:"前職の退職理由を聞かれた時、最も良い答え方は？",
+    options:["上司が最悪でした","会社の悪口を詳しく話す","前向きなキャリア理由に変換して話す","給料が低いだけを強調する"],
+    answer:2,
+    exp:"退職理由は不満だけでなく、次に実現したいことを軸に話すと印象が良くなります。"
+  },
+  {
+    q:"面接中に分からない質問をされた時は？",
+    options:["適当に答える","黙り込む","正直に伝え、考えられる範囲で回答する","質問を無視する"],
+    answer:2,
+    exp:"分からない時も誠実さと考える姿勢を見せることが大切です。"
+  },
+  {
+    q:"逆質問で評価されやすい質問は？",
+    options:["有給はいつから取れますか？だけ聞く","入社後に成果を出す人の共通点は何ですか？","残業は絶対ありませんか？","特にありません"],
+    answer:1,
+    exp:"逆質問では入社意欲や活躍イメージにつながる質問が評価されやすいです。"
+  },
+  {
+    q:"「当社でやりたいことは？」への良い答えは？",
+    options:["何でもいいです","まだ考えていません","自分の経験を使って貢献したい領域を具体的に話す","楽な仕事がしたいです"],
+    answer:2,
+    exp:"やりたいことは会社の事業や職種と結びつけて話すのがポイントです。"
+  },
+  {
+    q:"面接で話す長さとして適切なのは？",
+    options:["1つの質問に5分以上話す","質問に対して結論から簡潔に話す","一言だけで終える","相手の反応を見ずに話し続ける"],
+    answer:1,
+    exp:"結論から話し、補足を短く加えると分かりやすい印象になります。"
+  },
+  {
+    q:"「あなたの強みは？」への良い答え方は？",
+    options:["強みだけを抽象的に言う","強み＋具体例＋仕事での活かし方を話す","すごい人間ですと言う","友達に聞いてくださいと言う"],
+    answer:1,
+    exp:"強みは具体的なエピソードと応募職種での活かし方まで話すと説得力が出ます。"
+  },
+  {
+    q:"面接で遅刻しそうな時の対応は？",
+    options:["何も連絡しない","到着後に謝ればいい","分かった時点で電話やメールで連絡する","走れば問題ない"],
+    answer:2,
+    exp:"遅刻の可能性がある時点で早めに連絡し、到着見込みと謝罪を伝えましょう。"
+  },
+  {
+    q:"第一印象で大切なのは？",
+    options:["小声で話す","清潔感・挨拶・表情","派手な服装","スマホを見ながら入室"],
+    answer:1,
+    exp:"第一印象は清潔感、明るい挨拶、表情で大きく変わります。"
+  },
+  {
+    q:"面接官が話している時の正しい態度は？",
+    options:["途中で遮る","目線を合わせて相づちを打つ","スマホを見る","腕を組んで聞く"],
+    answer:1,
+    exp:"相手の話を聞く姿勢も評価対象です。相づちや表情で聞く姿勢を示しましょう。"
+  },
+  {
+    q:"「最後に一言ありますか？」で良い答えは？",
+    options:["特にないです","本日はありがとうございました。入社後は〇〇で貢献したいです","早く帰りたいです","結果はいつですかだけ言う"],
+    answer:1,
+    exp:"最後の一言は感謝と入社意欲を短く伝えるチャンスです。"
+  },
+  {
+    q:"面接で企業研究が不足していると見られやすい発言は？",
+    options:["御社の〇〇事業に興味があります","求人票の〇〇に魅力を感じました","何をしている会社かよく分かっていません","御社の強みを調べました"],
+    answer:2,
+    exp:"企業理解が浅いと志望度が低く見えます。最低限、事業内容・職種・強みは確認しましょう。"
+  },
+  {
+    q:"「残業はできますか？」への無難な答え方は？",
+    options:["絶対に無理です","必要な場面では対応できます。ただし効率も意識したいです","毎日何時間でもできます","質問に答えない"],
+    answer:1,
+    exp:"柔軟性と効率意識の両方を伝えるとバランスが良いです。"
+  },
+  {
+    q:"面接で緊張した時に良い対応は？",
+    options:["緊張していますが、落ち着いてお話ししますと伝える","逃げる","早口で全部話す","無言になる"],
+    answer:0,
+    exp:"緊張していることを軽く伝えてから落ち着いて話すと、誠実な印象になります。"
+  },
+  {
+    q:"「チームで働いた経験」を話す時に大切なのは？",
+    options:["自分だけがすごいと話す","役割・工夫・結果を話す","他の人を下げる","覚えていないと言う"],
+    answer:1,
+    exp:"チーム経験は自分の役割、工夫、結果をセットで話すと評価されやすいです。"
+  },
+  {
+    q:"面接で給与希望を聞かれた時の良い答え方は？",
+    options:["とにかく高くしてください","求人条件を理解したうえで、経験に応じて相談したいです","いくらでもいいです","答えたくありません"],
+    answer:1,
+    exp:"給与は希望を伝えつつ、条件や経験に応じて相談する姿勢が無難です。"
+  },
+  {
+    q:"面接でNGになりやすい話し方は？",
+    options:["結論から話す","具体例を出す","前職や他人の悪口を言う","相手の質問に答える"],
+    answer:2,
+    exp:"悪口は協調性や人柄への不安につながりやすいので避けましょう。"
+  },
+  {
+    q:"「成功体験」を話す時に良い構成は？",
+    options:["すごかったですで終わる","課題→行動→結果→学びで話す","結果だけ話す","運が良かっただけと言う"],
+    answer:1,
+    exp:"成功体験はSTAR法に近い形で、課題・行動・結果・学びを伝えると分かりやすいです。"
+  },
+  {
+    q:"「失敗経験」を聞かれた時に良い答えは？",
+    options:["失敗したことはありません","失敗内容・原因・改善策・現在の工夫を話す","人のせいにする","笑ってごまかす"],
+    answer:1,
+    exp:"失敗経験は、学びと改善行動を伝えることで成長力を示せます。"
+  },
+  {
+    q:"面接でメモを取っても良い？",
+    options:["絶対ダメ","必要なら一言断って取る","無言でずっと書き続ける","面接官の顔を見ない"],
+    answer:1,
+    exp:"メモを取る時は『メモを取ってもよろしいでしょうか』と一言添えると丁寧です。"
+  },
+  {
+    q:"「他社の選考状況」を聞かれた時は？",
+    options:["全部ウソをつく","正直に概要を伝え、御社への関心も伝える","怒る","何も受けていないと言い切る"],
+    answer:1,
+    exp:"選考状況は正直に伝えつつ、志望度や判断軸を補足すると良いです。"
+  },
+  {
+    q:"面接官に好印象を与えやすい姿勢は？",
+    options:["背もたれに深くもたれる","軽く背筋を伸ばして話す","足を組む","机に肘をつく"],
+    answer:1,
+    exp:"姿勢は印象に直結します。自然に背筋を伸ばすだけでも誠実に見えます。"
+  },
+  {
+    q:"オンライン面接で事前に確認すべきことは？",
+    options:["通信環境・カメラ・マイク・背景","服装は上だけでいい","開始時間に起きる","部屋を暗くする"],
+    answer:0,
+    exp:"オンライン面接は通信、音声、カメラ、背景、照明の確認が重要です。"
+  },
+  {
+    q:"「なぜ未経験職種に応募したのですか？」への良い答えは？",
+    options:["なんとなくです","興味だけです","これまでの経験との接点と学習行動を話す","楽そうだからです"],
+    answer:2,
+    exp:"未経験応募では、なぜ挑戦するのか、何を学んでいるのかを具体的に伝えることが大切です。"
+  },
+  {
+    q:"面接で自信がなさそうに見える行動は？",
+    options:["はっきり話す","目線を適度に合わせる","語尾が小さくなる","結論から話す"],
+    answer:2,
+    exp:"語尾が小さいと自信がない印象になりやすいです。最後まで聞こえる声で話しましょう。"
+  },
+  {
+    q:"「入社後の目標」を聞かれた時の良い答えは？",
+    options:["特にありません","早く慣れ、〇〇で成果を出したいです","すぐ管理職になりたいですだけ言う","楽に働きたいです"],
+    answer:1,
+    exp:"入社後の目標は、まず業務習得、その後の貢献内容を現実的に話すと良いです。"
+  },
+  {
+    q:"面接後のお礼メールは必要？",
+    options:["必須ではないが、送るなら簡潔に感謝を伝える","長文で何度も送る","結果を急かす内容にする","深夜に送る"],
+    answer:0,
+    exp:"お礼メールは必須ではありませんが、送るなら簡潔・丁寧・当日中が無難です。"
+  },
+  {
+    q:"面接で一番大切な考え方は？",
+    options:["暗記した答えを読む","自分を大きく見せる","相手の質問意図に合わせて具体的に伝える","全部ノリで答える"],
+    answer:2,
+    exp:"面接は会話です。質問意図を理解し、具体例を交えて答えることが突破につながります。"
+  },
+  {
+    q:"「弊社の弱みは何だと思いますか？」と聞かれたら？",
+    options:["悪口を言う","調べた範囲で課題を丁寧に述べ、改善視点も添える","分かりませんで終わる","競合の方が全部上ですと言う"],
+    answer:1,
+    exp:"弱みを聞かれたら、批判ではなく分析と改善視点で答えるのが安全です。"
+  },
+  {
+    q:"「希望しない部署に配属されたら？」への良い答えは？",
+    options:["すぐ辞めます","まず役割を理解し、経験を積みながら貢献します","絶対嫌です","黙る"],
+    answer:1,
+    exp:"柔軟性と前向きさを見られる質問です。希望はありつつも学ぶ姿勢を示しましょう。"
+  },
+  {
+    q:"「周囲からどんな人と言われますか？」の答え方は？",
+    options:["人気者ですだけ言う","具体的な評価と、それを示すエピソードを話す","分かりません","悪く言われますだけ言う"],
+    answer:1,
+    exp:"第三者評価は具体例があると説得力が増します。"
+  },
+  {
+    q:"面接で話が長くなりそうな時は？",
+    options:["そのまま話し続ける","要点を先に伝え、必要なら補足する","全部省略する","質問を変える"],
+    answer:1,
+    exp:"結論を先に言えば、長くなっても相手が理解しやすくなります。"
+  },
+  {
+    q:"「質問はありますか？」で避けたい回答は？",
+    options:["入社後に期待される役割を聞く","活躍している人の特徴を聞く","調べれば分かる基本情報だけ聞く","配属後の流れを聞く"],
+    answer:2,
+    exp:"ホームページや求人票に明記されていることだけを聞くと、準備不足に見える場合があります。"
+  }
+];
+
+let questions = [];
+let current = 0;
+let correct = 0;
+let answered = false;
+
+function shuffle(arr){
+  return arr.sort(() => Math.random() - 0.5);
+}
+
+function startGame(){
+  questions = shuffle([...allQuestions]).slice(0,30);
+  current = 0;
+  correct = 0;
+  document.getElementById("startScreen").style.display = "none";
+  document.getElementById("quizScreen").style.display = "block";
+  showQuestion();
+}
+
+function showQuestion(){
+  answered = false;
+  const q = questions[current];
+  document.getElementById("count").textContent = `${current + 1} / ${questions.length}`;
+  document.getElementById("score").textContent = `正解 ${correct}`;
+  document.getElementById("bar").style.width = `${(current / questions.length) * 100}%`;
+  document.getElementById("question").textContent = q.q;
+  document.getElementById("explain").style.display = "none";
+  document.getElementById("explain").textContent = "";
+  document.getElementById("nextBtn").style.display = "none";
+
+  const optionsEl = document.getElementById("options");
+  optionsEl.innerHTML = "";
+
+  q.options.forEach((text, index) => {
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = text;
+    btn.onclick = () => answer(index, btn);
+    optionsEl.appendChild(btn);
+  });
+}
+
+function answer(index, btn){
+  if(answered) return;
+  answered = true;
+
+  const q = questions[current];
+  const buttons = document.querySelectorAll(".option");
+
+  buttons.forEach((b, i) => {
+    b.disabled = true;
+    if(i === q.answer) b.classList.add("correct");
+  });
+
+  if(index === q.answer){
+    correct++;
+  }else{
+    btn.classList.add("wrong");
+  }
+
+  document.getElementById("score").textContent = `正解 ${correct}`;
+  document.getElementById("explain").style.display = "block";
+  document.getElementById("explain").textContent = q.exp;
+
+  setTimeout(() => {
+    nextQuestion();
+  }, 1300);
+}
+
+function nextQuestion(){
+  current++;
+  if(current >= questions.length){
+    showResult();
+  }else{
+    showQuestion();
+  }
+}
+
+function showResult(){
+  document.getElementById("quizScreen").style.display = "none";
+  document.getElementById("resultScreen").style.display = "block";
+  document.getElementById("bar").style.width = "100%";
+
+  const percent = Math.round((correct / questions.length) * 100);
+  document.getElementById("finalScore").textContent = `${correct} / ${questions.length}`;
+
+  let rank = "";
+  let comment = "";
+
+  if(percent >= 90){
+    rank = "面接突破レベル：S";
+    comment = "かなり優秀です。受け答えの軸ができています。本番でも落ち着いて話せば高評価を狙えます。";
+  }else if(percent >= 75){
+    rank = "面接突破レベル：A";
+    comment = "十分に戦えるレベルです。志望動機と逆質問をさらに磨くと通過率が上がります。";
+  }else if(percent >= 55){
+    rank = "面接突破レベル：B";
+    comment = "基本は押さえています。NG回答を避け、具体例を増やすとさらに良くなります。";
+  }else{
+    rank = "面接突破レベル：C";
+    comment = "まだ伸びしろがあります。結論から話す、企業研究をする、短所や退職理由を前向きに言い換える練習をしましょう。";
+  }
+
+  document.getElementById("rank").textContent = rank;
+  document.getElementById("comment").textContent = comment;
+}
+</script>
+</body>
+</html>
